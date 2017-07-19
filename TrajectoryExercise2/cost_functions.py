@@ -80,7 +80,18 @@ def stays_on_road_cost(traj, target_vehicle, delta, T, predictions):
 
 
 def exceeds_speed_limit_cost(traj, target_vehicle, delta, T, predictions):
-    pass
+    """
+    Penalizes exceeding speed limit
+    """
+    s_coeffs = traj[0]
+    s_dot_coeffs = differentiate(s_coeffs)
+    velocity = to_equation(s_dot_coeffs)
+
+    nb_steps = 101
+    for time in np.linspace(0, T, nb_steps):
+        if velocity(time) > SPEED_LIMIT:
+            return 1.0
+    return 0.0
 
 
 def efficiency_cost(traj, target_vehicle, delta, T, predictions):

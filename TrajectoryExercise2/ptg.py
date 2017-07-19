@@ -15,6 +15,7 @@ WEIGHTED_COST_FUNCTIONS = [
     (buffer_cost, 1),
     (max_accel_cost, 1),
     (total_accel_cost, 1),
+    (exceeds_speed_limit_cost, 1)
 ]
 
 
