@@ -22,7 +22,6 @@ Vehicle::Vehicle(int lane, int s, int v, int a) {
 
 Vehicle::~Vehicle() {}
 
-// TODO - Implement this method.
 void Vehicle::update_state(map<int,vector < vector<int> > > predictions) {
   /*
     Updates the "state" of the vehicle by assigning one of the
@@ -55,11 +54,66 @@ void Vehicle::update_state(map<int,vector < vector<int> > > predictions) {
         {"s" : 10, "lane": 0},
       ]
     }
+  */
 
-    */
-  state = "KL"; // this is an example of how you change state.
+  /*
+   * Lane speeds initialize to target speed
+   */
+  vector<int> lane_speed;
+  lane_speed.assign(lanes_available, target_speed);
 
+  /*
+   * Determine speed for each lane
+   */
+  for (auto vehicle : predictions) {
+    int step = 0;
+    for (auto position : vehicle.second) {
+      int pred_lane = position[0];
+      int pred_s = position[1];
+      int ego_pos = state_at(step)[1];
 
+      // if ego (with current speed) would coincide with vehicle in other lane, record that lane speed
+      if (abs(ego_pos - pred_s) <= L) {
+        int nb_steps = (int) vehicle.second.size() - 1;
+        int first_pos = vehicle.second[0][1];
+        int last_pos = vehicle.second[nb_steps][1];
+        lane_speed[pred_lane] = (last_pos - first_pos) / nb_steps;
+      }
+      step++;
+    }
+  }
+
+  /*
+   * Cost added for wrong lane if close to goal
+   * Cost added for slow lane speed
+   * Cost total calculation
+   */
+  int distance_to_goal = abs(goal_s - this->s);
+  int distance_cutoff = 100;
+  vector<int> cost_total;
+  for (int lane_idx = 0; lane_idx < lanes_available; lane_idx++) {
+    int cost_lane = distance_to_goal < distance_cutoff ? abs(goal_lane - lane_idx) : 0;
+    int cost_speed = target_speed - lane_speed[lane_idx];
+    cost_total.push_back(cost_lane + cost_speed);
+  }
+
+  /*
+   * Find lane with lowest total cost and move towards it
+   */
+  int min_cost_idx = 0;
+  for (int lane_idx = 0; lane_idx < lanes_available; lane_idx++) {
+    if (cost_total[lane_idx] < cost_total[min_cost_idx]) {
+      min_cost_idx = lane_idx;
+    }
+  }
+
+  if (min_cost_idx < this->lane) {
+    state = "LCR";
+  } else if (min_cost_idx > this->lane) {
+    state = "LCL";
+  } else {
+    state = "KL";
+  }
 }
 
 void Vehicle::configure(vector<int> road_data) {
