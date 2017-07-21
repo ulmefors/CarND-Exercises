@@ -84,7 +84,7 @@ void Road::advance() {
 
 }
 
-void Road::display() {
+void Road::display(int timestep) {
 
   Vehicle ego = this->vehicles.find(this->ego_key)->second;
   int s = ego.s;
@@ -141,6 +141,7 @@ void Road::display() {
     it++;
   }
   ostringstream oss;
+  oss << "+Meters ======================+ step: " << timestep << endl;
   int i = s_min;
   for(int lj = 0; lj < road.size(); lj++)
   {
@@ -168,7 +169,7 @@ void Road::display() {
     oss << "|";
     oss << "\n";
   }
-  oss << "+=============================+" << endl;
+
   cout << oss.str();
 
 }

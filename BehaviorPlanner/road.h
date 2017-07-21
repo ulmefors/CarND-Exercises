@@ -51,7 +51,7 @@ public:
 
   void advance();
 
-  void display();
+  void display(int timestep);
 
   void add_ego(int lane_num, int s, vector<int> config_data);
 

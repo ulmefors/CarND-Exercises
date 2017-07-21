@@ -21,7 +21,7 @@ double TRAFFIC_DENSITY   = 0.15;
 int MAX_ACCEL = 2;
 
 // s value and lane number of goal.
-vector<int> GOAL = {300, 3};
+vector<int> GOAL = {300, 0};
 
 // These affect the visualization
 int FRAMES_PER_SECOND = 4;
@@ -36,7 +36,7 @@ int main() {
 	road.populate_traffic();
 
 	int goal_s = 300;
-	int goal_lane = 3;
+	int goal_lane = 0;
 
 	//configuration data: speed limit, num_lanes, goal_s, goal_lane, max_acceleration
 
@@ -53,7 +53,7 @@ int main() {
 			break;
 		}
 		road.advance();
-		road.display();
+		road.display(timestep);
 		//time.sleep(float(1.0) / FRAMES_PER_SECOND);
 	}
 	Vehicle ego = road.get_ego();
